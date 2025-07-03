@@ -177,7 +177,7 @@ exports.login = async (req,res) => {
                 message: "User is not registered, please signup first",
             });
         }
-        // generate JWT, after passoword matching
+        // generate JWT token, after passoword matching
         if(await bcrypt.compare(password,user.password)){
             const payload = {
                 email: user.email,
@@ -185,7 +185,7 @@ exports.login = async (req,res) => {
                 accountType: user.accountType, // ye kya h
             }
             const token = jwt.sign(payload, process.env.JWT_SECRET, {
-                expiresIn: "2h",
+                expiresIn: "24h",
             });
             user.token = token;
             user.password = undefined; // ye kyu?

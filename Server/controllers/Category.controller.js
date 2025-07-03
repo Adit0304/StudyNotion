@@ -1,5 +1,6 @@
 const { Mongoose } = require("mongoose");
 const Category = require("../models/Category");
+const Course = require("../models/Course")
 function getRandomInt(max) {
     return Math.floor(Math.random() * max)
 }
@@ -32,11 +33,14 @@ exports.createCategory = async (req, res) => {
 
 exports.showAllCategories = async (req, res) => {
 	try {
-        console.log("INSIDE SHOW ALL CATEGORIES");
-		const allCategorys = await Category.find({});
+    console.log("INSIDE SHOW ALL CATEGORIES");
+		const allCategories = await Category.find(
+      {},
+      {name : true, description: true}
+    );
 		res.status(200).json({
 			success: true,
-			data: allCategorys,
+			data: allCategories,
 		});
 	} catch (error) {
 		return res.status(500).json({
@@ -81,16 +85,17 @@ exports.categoryPageDetails = async (req, res) => {
       // Get courses for other categories
       const categoriesExceptSelected = await Category.find({
         _id: { $ne: categoryId },
-      })
-      let differentCategory = await Category.findOne(
-        categoriesExceptSelected[getRandomInt(categoriesExceptSelected.length)]
-          ._id
-      )
-        .populate({
-          path: "courses",
-          match: { status: "Published" },
-        })
-        .exec()
+      }).populate(
+        {
+          path:"courses",
+          match:{status:"Published"},
+          populate:([{path:"instructor"},{path:"ratingAndReviews"}])
+        }
+      );
+      let differentCourses = [];
+      for (const category of categoriesExceptSelected) {
+        differentCourses.push(...category.courses);
+      }
         //console.log("Different COURSE", differentCategory)
       // Get top-selling courses across all categories
       const allCategories = await Category.find()
