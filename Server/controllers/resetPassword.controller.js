@@ -16,13 +16,13 @@ exports.resetPasswordToken = async (req,res) => {
             });
         }
         // token generation for frontend link to differ the link such that every link is diff.
-        const token = crypto.randomUUID();
+        const token = crypto.randomBytes(20).toString("hex");
 
         // update user by adding token and expiry time
         const updatedDetails = await User.findOneAndUpdate({email:email},
             {
                 token: token,
-                resetPasswordExpires: Date.now() + 5*60*1000,
+                resetPasswordExpires: Date.now() + 3600000,
             },
             {new: true}); // isse updated document jayega response main 
         
@@ -31,8 +31,9 @@ exports.resetPasswordToken = async (req,res) => {
 
         // Send mail containing the url
         await mailSender(email,
-            "Password Reset Link",
-            `Password Reset Link: ${url}`);
+            "Password Reset",
+            `Your Link for email verification is ${url}. Please click this url to reset your password.`
+        );
         
         // return response
         return res.json({

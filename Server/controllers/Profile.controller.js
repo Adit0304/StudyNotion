@@ -1,45 +1,41 @@
 const Profile = require("../models/Profile");
 const User = require("../models/User");
 
-exports.updateProfile = async (req,res) => {
-    try {
-       // get data and userId
-       const {dateOfBirth="",about="",contactNumber, gender} = req.body;
+exports.updateProfile = async (req, res) => {
+	try {
+		const { dateOfBirth = "", about = "", contactNumber="",firstName,lastName,gender="" } = req.body;
+		const id = req.user.id;
 
-       const id = req.user.id;
-       // validate
-       if(!contactNumber || !gender || !id){
-        return res.status(400).json({
-            success: false,
-            message: "All fields are required",
-        })
-       }
+		// Find the profile by id
+		const userDetails = await User.findById(id);
+		const profile = await Profile.findById(userDetails.additionalDetails);
 
-       // find profile
-       const userDetails = await User.findById(id);
-       const profileId = userDetails.additionalDetails;
-       const profileDetails = await Profile.findById(profileId);
-       // update profile
-       profileDetails.dateOfBirth = dateOfBirth;
-       profileDetails.about = about;
-       profileDetails.gender = gender;
-       profileDetails.contactNumber = contactNumber;
-       await profileDetails.save();
+		// Update the profile fields
+		userDetails.firstName = firstName || userDetails.firstName;
+		userDetails.lastName = lastName || userDetails.lastName;
+		profile.dateOfBirth = dateOfBirth || profile.dateOfBirth;
+		profile.about = about || profile.about;
+		profile.gender=gender || profile.gender;
+		profile.contactNumber = contactNumber || profile.contactNumber;
 
-       // return res
-       return res.status(200).json({
-        success: true,
-        message: "Profile Updated Successfully",
-        profileDetails,
-       })
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to Update Profile, please try again",
-            error: error.message,
-        })
-    }
-}
+		// Save the updated profile
+		await profile.save();
+		await userDetails.save();
+
+		return res.json({
+			success: true,
+			message: "Profile updated successfully",
+			profile,
+			userDetails
+		});
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({
+			success: false,
+			error: error.message,
+		});
+	}
+};
 
 // deleteAccount
 // Explore -> how can we schedule this deletion 

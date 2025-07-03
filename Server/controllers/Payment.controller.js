@@ -93,7 +93,7 @@ exports.capturePayment = async (req, res) => {
     
 };
 
-//verify signature of razorpay and server
+//verify the signature
 exports.verifySignature = async (req, res) => {
     //get the payment details
     const {razorpay_payment_id, razorpay_order_id, razorpay_signature} = req.body;
@@ -136,13 +136,13 @@ exports.verifySignature = async (req, res) => {
                     const newCourseProgress = new CourseProgress({
                         userID: userId,
                         courseID: course_id,
-                      })
-                      await newCourseProgress.save()
+                        })
+                        await newCourseProgress.save()
                 
-                      //add new course progress to user
-                      await User.findByIdAndUpdate(userId, {
+                        //add new course progress to user
+                        await User.findByIdAndUpdate(userId, {
                         $push: { courseProgress: newCourseProgress._id },
-                      },{new:true});
+                        },{new:true});
                     //send email
                     const recipient = await User.findById(userId);
                     console.log("recipient=>",course);
@@ -189,34 +189,32 @@ exports.verifySignature = async (req, res) => {
         });
     }
 
- 
+    
 }
-
 
 //send email
-
 exports.sendPaymentSuccessEmail = async (req, res) => {
-const {amount,paymentId,orderId} = req.body;
-const userId = req.user.id;
-if(!amount || !paymentId) {
-    return res.status(400).json({
-        success:false,
-        message:'Please provide valid payment details',
-    });
+    const {amount,paymentId,orderId} = req.body;
+    const userId = req.user.id;
+    if(!amount || !paymentId) {
+        return res.status(400).json({
+            success:false,
+            message:'Please provide valid payment details',
+        });
+    }
+    try{
+        const enrolledStudent =  await User.findById(userId);
+        await mailSender(
+            enrolledStudent.email,
+            `Study Notion Payment successful`,
+            paymentSuccess(amount/100, paymentId, orderId, enrolledStudent.firstName, enrolledStudent.lastName),
+        );
 }
-try{
-    const enrolledStudent =  await User.findById(userId);
-    await mailSender(
-        enrolledStudent.email,
-        `Study Notion Payment successful`,
-        paymentSuccess(amount/100, paymentId, orderId, enrolledStudent.firstName, enrolledStudent.lastName),
-    );
-}
-catch(error) {
-    console.error(error);
-    return res.status(500).json({
-        success:false,
-        message:error.message,
-    });
-}
+    catch(error) {
+        console.error(error);
+        return res.status(500).json({
+            success:false,
+            message:error.message,
+        });
+    }
 }
