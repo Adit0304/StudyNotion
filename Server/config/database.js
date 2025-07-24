@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { DB_NAME } = require("../constants")
 require("dotenv").config();
 
 exports.connect = () => {
@@ -6,6 +7,7 @@ exports.connect = () => {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })
+    // await mongoose.connect(`${process.env.MONGODB_URL}/${DB_NAME}`)
     .then(()=>console.log("DB Connected Successfully"))
     .catch((error)=>{
         console.log("DB Connection Failed");
