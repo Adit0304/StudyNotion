@@ -4,8 +4,8 @@ const Course = require("../models/Course");
 const mailSender = require("../utils/mailSender");
 const CourseProgress = require("../models/CourseProgress");
 const { default: mongoose } = require("mongoose");
-const {courseEnrollmentEmail} = require("../mail/templates/courseEnrollmentEmail");
-const {paymentSuccess} = require("../mail/templates/paymentSuccess");
+const courseEnrollmentEmail = require("../mail/templates/courseEnrollmentEmail");
+const paymentSuccess = require("../mail/templates/paymentSuccessEmail");
 const crypto = require("crypto");
 
 
@@ -187,9 +187,7 @@ exports.verifySignature = async (req, res) => {
             success:false,
             message:error.message,
         });
-    }
-
-    
+    }  
 }
 
 //send email

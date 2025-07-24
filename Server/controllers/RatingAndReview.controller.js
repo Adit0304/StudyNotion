@@ -6,9 +6,10 @@ const { default: mongoose } = require("mongoose");
 exports.createRating = async (req,res) => {
     try {
         // get user id
-        const {userId} = req.user.id;
+        const userId = req.user.id;
         // fetch data from req.body
         const {rating,review,courseId} = req.body;
+        console.log("Here");
         // check if user is enrolled or not
         const courseDetails = await Course.findOne(
             {_id: courseId,
@@ -32,12 +33,14 @@ exports.createRating = async (req,res) => {
             })
         }
         // create rating and review
+        console.log("Here");
         const ratingAndReview = await RatingAndReview.create({
             rating,review,
             user: userId,
             course: courseId,
         });
         // update course with this review
+        console.log("Here");
         const updatedCourseDetails = await Course.findByIdAndUpdate(
             {_id: courseId},
             {$push: {ratingAndReviews: ratingAndReview._id}},

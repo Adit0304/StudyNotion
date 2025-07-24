@@ -50,7 +50,7 @@ exports.createSubSection = async (req,res) => {
 		return res.status(200).json({ success: true, data: updatedCourse });
 
     } catch (error) {
-        return res.status().json({
+        return res.status(400).json({
             success: false,
             message: "Internal Server Error",
             error: error.message,

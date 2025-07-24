@@ -7,7 +7,7 @@ exports.cloudnairyconnect= ()=>{
             api_key : process.env.API_KEY,
             api_secret : process.env.API_SECRET
         })
-        console.log("CD connected");
+        console.log("Cloudinary connected");
 
         
     } catch (error) {

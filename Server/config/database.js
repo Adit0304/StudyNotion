@@ -3,10 +3,7 @@ const { DB_NAME } = require("../constants")
 require("dotenv").config();
 
 exports.connect = () => {
-    mongoose.connect(process.env.MONGODB_URL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
+    mongoose.connect(process.env.MONGODB_URL)
     // await mongoose.connect(`${process.env.MONGODB_URL}/${DB_NAME}`)
     .then(()=>console.log("DB Connected Successfully"))
     .catch((error)=>{

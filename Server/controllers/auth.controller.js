@@ -80,7 +80,7 @@ exports.signUp = async function (req,res) {
             otp
         } = req.body;
         // validate kro
-        if(!firstName || !lastName || !email || !password || !confirmPassword || !contactNumber || !otp){
+        if(!firstName || !lastName || !email || !password || !confirmPassword || !otp){
             return res.status(403).json({
                 success: false,
                 message: "All fields are required",
@@ -105,14 +105,16 @@ exports.signUp = async function (req,res) {
         /// find most recent OTP
         const recentOtp = await OTP.find({email}).sort({createdAt:-1}).limit(1); // ye ek query h
 
-        console.log(recentOtp);
+        // console.log("recent Otp is",recentOtp);
+        // console.log("recent Otp is",recentOtp.otp);
+        // console.log("User Otp is",otp);
         // validate OTP
         if(recentOtp.length == 0){
             return res.status(400).json({
                 successs:false,
                 message: "OTP Not Found",
             })
-        } else if(otp !== recentOtp.otp){
+        } else if(otp !== recentOtp[0].otp){
             return res.status(400).json({
                 successs:false,
                 message: "Invalid OTP",
@@ -132,7 +134,7 @@ exports.signUp = async function (req,res) {
             contactNumber: null
         })
 
-        const user = User.create({
+        const userDetails = await User.create({
             firstName,
             lastName,
             email,
@@ -140,13 +142,15 @@ exports.signUp = async function (req,res) {
             accountType,
             contactNumber,
             additionalDetails: profileDetails._id,
-            image: `https://api/dicebear/com/5.x/initials/svg?seed=${firstName} ${lastName}`,
+            image: `https://avatar.oxro.io/avatar.svg?name=${firstName}+${lastName}&background=6ab04ccolor=fff&length=2&bold=true`,
         })
         // return res
         res.status(200).json({
             success: true,
-            message: "User is registered Successfully"
+            message: "User is registered Successfully",
+            user: userDetails,
         })
+
     } catch (error) {
         console.log(error);
         res.status(500).json({

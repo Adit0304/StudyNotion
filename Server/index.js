@@ -20,26 +20,37 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 database.connect();
 
-app.use(express.json());
+app.use(express.json({ limit: "1000mb" }));
+// app.use(express.urlencoded({ extended: true, limit: "1000mb" }));
+
 app.use(cookieParser());
 
 const whitelist = process.env.CORS_ORIGIN
   ? JSON.parse(process.env.CORS_ORIGIN)
   : ["*"];
 
-app.use(
-cors({
-    origin: whitelist,
-    credentials: true,
-    maxAge: 14400,
-})
-);
+// app.use(
+// cors({
+//     origin: whitelist,
+//     credentials: true,
+//     maxAge: 14400,
+// })
+// );
 
 app.use(
-fileUpload({
+  cors({
+      origin: "http://localhost:3000",
+      credentials: true,
+      maxAge: 14400,
+  })
+)
+
+app.use(
+  fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp",
-})
+    limits: { fileSize: 1024 * 1024 * 500 }, // 500MB
+  })
 );
 
 cloudnairyconnect();
@@ -56,6 +67,7 @@ app.use("/api/v1/contact", require("./routes/ContactUs"));
 
 app.get("/", (req, res) => {
   res.status(200).json({
+    success: true,
     message: "Welcome to the API",
   });
 });

@@ -14,6 +14,15 @@ exports.createCategory = async (req, res) => {
                 message: "All fields are required" 
             });
 		}
+    const CategoryCheck = await Category.findOne({name});
+
+    if(CategoryCheck){
+      return res.status(400).json({
+        successs:false,
+        message: "Category already created",
+      })
+    }
+
 		const CategoryDetails = await Category.create({
 			name: name,
 			description: description,

@@ -5,7 +5,7 @@ const {
   deleteAccount,
   updateProfile,
   getAllUserDetails,
-//   updateDisplayPicture,
+  updateDisplayPicture,
 //   getEnrolledCourses,
 //   instructorDashboard,
 } = require("../controllers/Profile.controller")
@@ -18,6 +18,7 @@ const { isDemo } = require("../middlewares/demo.middleware");
 router.delete("/deleteProfile",auth,isDemo,deleteAccount)
 router.put("/updateProfile", auth,isDemo, updateProfile)
 router.get("/getUserDetails", auth, getAllUserDetails)
+router.put("/updateDisplayPicture",auth,updateDisplayPicture)
 // Get Enrolled Courses
 // router.get("/getEnrolledCourses", auth, getEnrolledCourses)
 // router.put("/updateDisplayPicture", auth,isDemo, updateDisplayPicture)
